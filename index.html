@@ -11,24 +11,45 @@
 
     <script>
         async function fetchProperties() {
-           const response = await fetch("https://TU-NETLIFY-SITE.netlify.app/.netlify/functions/easybroker");
-                headers: {
-                    "X-Authorization": "uvyru964fa0mwatr4auirtm005ssir"  // Reemplaza con tu API Key de EasyBroker
-                }
-            });
-            const data = await response.json();
-            const propertiesDiv = document.getElementById("properties");
+            try {
+                const response = await fetch("https://catalogocapitalinm.netlify.app/.netlify/functions/easybroker", { 
+                    method: "GET",
+                    headers: { 
+                        "X-Authorization": "uvyru964fa0mwatr4auirtm005ssir" // Reemplaza con tu API Key
+                    }
+                });
 
-            if (data.content.length > 0) {
-                data.content.forEach(property => {
-                    propertiesDiv.innerHTML += `
-                        <div>
-                            <h2>${property.title}</h2>
-                            <p>${property.location}</p>
-                            <p>Precio: ${property.operations[0].formatted_amount}</p>
-                        </div>
-                        <hr>
-                    `;
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+
+                const data = await response.json();
+                const propertiesDiv = document.getElementById("properties");
+
+                if (data.content.length > 0) {
+                    data.content.forEach(property => {
+                        propertiesDiv.innerHTML += `
+                            <div>
+                                <h2>${property.title}</h2>
+                                <p>${property.location}</p>
+                                <p>Precio: ${property.operations[0].formatted_amount}</p>
+                            </div>
+                            <hr>
+                        `;
+                    });
+                } else {
+                    propertiesDiv.innerHTML = "<p>No hay propiedades disponibles.</p>";
+                }
+            } catch (error) {
+                console.error("Error al obtener propiedades:", error);
+            }
+        }
+
+        fetchProperties();
+    </script>
+</body>
+</html>
+
                 });
             } else {
                 propertiesDiv.innerHTML = "<p>No hay propiedades disponibles.</p>";
